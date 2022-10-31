@@ -156,7 +156,7 @@ namespace FourByFour
 			// set the tempo at the first position
 			track0.Events.Add(new MidiEvent(0, new MidiMessageMetaTempo((double)TempoUpDown.Value)));
 			// compute the length of our loop
-			var len = ((int)BarsUpDown.Value) * ((int)StepsUpDown.Value) * file.TimeBase / 4;
+			var len = ((int)BarsUpDown.Value) * ((int)StepsUpDown.Value) * file.TimeBase / 4; //steps are in 16ths
 			// add an end of track marker just so all
 			// of our tracks will be the loop length
 			track0.Events.Add(new MidiEvent(len, new MidiMessageMetaEndOfTrack()));
@@ -191,7 +191,7 @@ namespace FourByFour
 					// if the step is pressed create 
 					// a note for it
 					if (beat.Steps[i])
-						noteMap.Add(new MidiNote(i * (file.TimeBase / 4), 9, note, 127, file.TimeBase / 4-1));
+						noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1)); ;
 				}
 				// convert the note map to a sequence
 				// and add it to our working tracks
@@ -316,27 +316,49 @@ namespace FourByFour
 						beat.Steps[14 + (i * 16)] = true;
 					}
 					break;
+				case 4:
+					for (byte i=0; i < 10; i++)
+                    {
+						var beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value) { Channel = i};
+						beat.NoteId = 36; // volca - we don't care
+						//beat.Bars = (int)BarsUpDown.Value;
+						beat.Delete += Beats_Delete;
+						BeatsPanel.Controls.Add(beat);
+					}
+					break;
 			}
 		}
+
+		//TODO - make note assignments for other devices as well
+		//EG Roland TR-06
+		//Inst.Tx Note Number Rx Note Number
+		//BD     36             35, 36
+		//SD     38             38, 40
+		//LT     47             45, 47
+		//HT     50             48, 50
+		//CY     49             49
+		//OH     46             46
+		//CH     42             42, 44
+
 		void _MakeBasicKit()
 		{
-			var beat = new BeatControl();
+			var beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
 			beat.NoteId = 36; // Bass Drum 1
-			beat.Bars = (int)BarsUpDown.Value;
+			//beat.Bars = (int)BarsUpDown.Value;
 			beat.Delete += Beats_Delete;
 			BeatsPanel.Controls.Add(beat);
-			beat = new BeatControl();
+			beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
 			beat.NoteId = 40; // Electric Snare 1
-			beat.Bars = (int)BarsUpDown.Value;
+			//beat.Bars = (int)BarsUpDown.Value;
 			beat.Delete += Beats_Delete;
 			BeatsPanel.Controls.Add(beat);
-			beat = new BeatControl();
+			beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
 			beat.NoteId = 42; // Closed Hat
-			beat.Bars = (int)BarsUpDown.Value;
+			//beat.Bars = (int)BarsUpDown.Value;
 			beat.Delete += Beats_Delete;
 			BeatsPanel.Controls.Add(beat);
-			beat = new BeatControl();
-			beat.NoteId = 46; // Open Hat
+			beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
+			//beat.NoteId = 46; // Open Hat
 			beat.Bars = (int)BarsUpDown.Value;
 			beat.Delete += Beats_Delete;
 			BeatsPanel.Controls.Add(beat);

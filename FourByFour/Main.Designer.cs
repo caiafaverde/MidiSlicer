@@ -101,6 +101,11 @@
             this.TempoUpDown.Name = "TempoUpDown";
             this.TempoUpDown.Size = new System.Drawing.Size(41, 23);
             this.TempoUpDown.Text = "100";
+            this.TempoUpDown.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             // 
             // toolStripSeparator1
             // 
@@ -118,6 +123,11 @@
             this.BarsUpDown.Name = "BarsUpDown";
             this.BarsUpDown.Size = new System.Drawing.Size(41, 23);
             this.BarsUpDown.Text = "1";
+            this.BarsUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.BarsUpDown.ValueChanged += new System.EventHandler(this.BarsUpDown_ValueChanged);
             // 
             // toolStripSeparator2
@@ -135,8 +145,13 @@
             // 
             this.StepsUpDown.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.StepsUpDown.Name = "StepsUpDown";
-            this.StepsUpDown.Size = new System.Drawing.Size(35, 23);
+            this.StepsUpDown.Size = new System.Drawing.Size(41, 23);
             this.StepsUpDown.Text = "16";
+            this.StepsUpDown.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
             this.StepsUpDown.ValueChanged += new System.EventHandler(this.StepsUpDown_ValueChanged);
             // 
             // toolStripSeparator3
@@ -157,7 +172,8 @@
             "(None)",
             "Basic Empty",
             "Break",
-            "House"});
+            "House",
+            "Basic Volca"});
             this.PatternComboBox.Name = "PatternComboBox";
             this.PatternComboBox.Size = new System.Drawing.Size(121, 26);
             this.PatternComboBox.SelectedIndexChanged += new System.EventHandler(this.PatternComboBox_SelectedIndexChanged);

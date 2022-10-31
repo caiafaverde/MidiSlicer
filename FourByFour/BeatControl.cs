@@ -16,10 +16,14 @@ namespace FourByFour
 		static readonly object _DeleteKey = new object();
 		static readonly object _BarsChangedKey = new object();
 		static readonly object _NoteIdChangedKey = new object();
+
+		public byte Channel { get; set; }
+
 		public BeatControl() : this(1, 16) { }
 		public BeatControl(int bars, int stepCount)
 		{
 			InitializeComponent();
+			Channel = 9;
 			StepControl.BuildSteps(bars, stepCount);
 			var items = Instrument.Items;
 			items.Add(new Ins("Acoustic Bass Drum",35));
