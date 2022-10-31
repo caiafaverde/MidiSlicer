@@ -19,7 +19,8 @@ namespace FourByFour
 		{
 			InitializeComponent();
 			var devs= MidiDevice.Outputs;
-			OutputComboBox.DisplayMember = "Name";
+			
+			OutputComboBox.ComboBox.DisplayMember = "Name";
 			foreach (var dev in devs)
 				OutputComboBox.Items.Add(dev);
 			OutputComboBox.SelectedIndex = 0;
@@ -29,7 +30,7 @@ namespace FourByFour
 
 		private void AddButton_Click(object sender, EventArgs e)
 		{
-			var beats = new BeatControl();
+			var beats = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
 			BeatsPanel.Controls.Add(beats);
 			beats.Delete += Beats_Delete;
 		}
@@ -155,7 +156,7 @@ namespace FourByFour
 			// set the tempo at the first position
 			track0.Events.Add(new MidiEvent(0, new MidiMessageMetaTempo((double)TempoUpDown.Value)));
 			// compute the length of our loop
-			var len = ((int)BarsUpDown.Value) * 4 * file.TimeBase;
+			var len = ((int)BarsUpDown.Value) * ((int)StepsUpDown.Value) * file.TimeBase / 4;
 			// add an end of track marker just so all
 			// of our tracks will be the loop length
 			track0.Events.Add(new MidiEvent(len, new MidiMessageMetaEndOfTrack()));
@@ -218,6 +219,25 @@ namespace FourByFour
 			{
 				var file = _CreateMidiFile();
 				file.WriteTo(SaveMidiFile.FileName);
+			}
+		}
+
+		private void StepsUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			foreach (var ctl in BeatsPanel.Controls)
+			{
+				var beat = ctl as BeatControl;
+				if (null != beat) // sanity
+				{
+					var steps = new List<bool>(beat.Steps);
+					beat.StepCount = (int)StepsUpDown.Value;
+					for (int ic = steps.Count, i = 0; i < ic; ++i)
+					{
+						if (i >= beat.Steps.Count)
+							break;
+						beat.Steps[i] = steps[i];
+					}
+				}
 			}
 		}
 
@@ -322,5 +342,6 @@ namespace FourByFour
 			BeatsPanel.Controls.Add(beat);
 		}
 
-	}
+        
+    }
 }

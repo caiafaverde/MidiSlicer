@@ -52,6 +52,9 @@
     <Compile Include="BeatControl.Designer.cs">
       <DependentUpon>BeatControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="NumericUpDownToolStripItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Rythm.cs" />
     <Compile Include="StepControl.cs">
       <SubType>UserControl</SubType>

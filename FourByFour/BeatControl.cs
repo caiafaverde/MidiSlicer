@@ -16,9 +16,11 @@ namespace FourByFour
 		static readonly object _DeleteKey = new object();
 		static readonly object _BarsChangedKey = new object();
 		static readonly object _NoteIdChangedKey = new object();
-		public BeatControl()
+		public BeatControl() : this(1, 16) { }
+		public BeatControl(int bars, int stepCount)
 		{
 			InitializeComponent();
+			StepControl.BuildSteps(bars, stepCount);
 			var items = Instrument.Items;
 			items.Add(new Ins("Acoustic Bass Drum",35));
 			items.Add(new Ins("Bass Drum 1",36));
@@ -109,6 +111,21 @@ namespace FourByFour
 				StepControl.Size = new Size(StepControl.Width, Height);
 			}
 		}
+
+		public int StepCount
+		{
+			get
+			{
+				return StepControl.StepCount;
+			}
+			set
+			{
+				StepControl.StepCount = value;
+				//OnBarsChanged(EventArgs.Empty);
+				StepControl.Size = new Size(StepControl.Width, Height);
+			}
+		}
+
 		protected void OnBarsChanged(EventArgs args)
 		{
 			(Events[_BarsChangedKey] as EventHandler)?.Invoke(this, args);
