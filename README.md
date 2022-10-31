@@ -9,3 +9,5 @@ That library grew as I added more features and shored up what I had. I added som
 In the process, MidiSlicer moved from a first class application to just another demo project, so the solution is still named MidiSlicer - I'm stuck with the GitHub of that name. The core library project is named Midi.
 
 I wrote a [comprehensive article at codeproject](https://www.codeproject.com/Articles/5272315/Midi-A-Windows-MIDI-Library-in-Csharp) on using this library, and I recommend using it. The latest version of the code is always here at GitHub.
+
+THe primal goal of this fork is to experiment with Euclidean rythms as well as sending drum sequences to Korg Volka Sample.
