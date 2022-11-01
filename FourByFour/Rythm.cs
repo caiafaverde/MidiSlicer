@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FourByFour
 {
@@ -12,7 +11,7 @@ namespace FourByFour
         int _beats;
         int _length;
 
-        public IEnumerable<bool> Steps => _rythm;
+        public IList<bool> Steps => _rythm;
 
         public static Rythm FromBeatString(string rythm) //like x..x..x
         {
@@ -28,7 +27,21 @@ namespace FourByFour
             foreach (var c in rythm)
             {
                 if (c == 'x')
-                    result._rythm[i++] = true;
+                    result._rythm[i] = true;
+                i++;
+            }
+            return result;
+        }
+
+        public static Rythm FromBool(IList<bool> src)
+        {
+            var result = new Rythm();
+            result._length = src.Count;
+            result._rythm = new bool[result._length];
+            for (int i=0; i < src.Count; i++)
+            {
+                if ((result._rythm[i] = src[i]))
+                    result._beats++;
             }
             return result;
         }
@@ -52,6 +65,36 @@ namespace FourByFour
                 i += c;
             }
             return result;
+        }
+
+        public  string ToIntervalString() //like 3222
+        {
+            if (!_rythm[0])
+                return string.Empty;
+            StringBuilder sb = new StringBuilder();
+            int acc = 1;
+            for (int i = 1; i < _rythm.Length; i++)
+            {
+                if (_rythm[i])
+                {
+                    sb.Append(acc);
+                    acc = 1;
+                }
+                else
+                    acc++;
+            }
+            sb.Append(acc);
+            return sb.ToString();
+        }
+
+        public static int GCD(int a, int b)
+        {
+            var max = Math.Max(a, b);
+            var min = Math.Min(a, b);
+            if (min == 0)
+                return max;
+
+            return GCD(max % min, min);
         }
 
         Rythm() { }
@@ -85,7 +128,7 @@ namespace FourByFour
             while (true)
             {
                 var lengths = ones.Select(o => o.Count).ToList();
-                if (lengths.Count(l => l == lengths[0]) == 4)
+                if (lengths.Count(l => l == lengths[0]) == lengths.Count)
                     break;
                 if (lengths.Count(l => l == lengths[lengths.Count - 1]) == 1)
                     break;

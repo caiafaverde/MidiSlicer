@@ -70,6 +70,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StepToggle.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="BeatControl.resx">
       <DependentUpon>BeatControl.cs</DependentUpon>
     </EmbeddedResource>

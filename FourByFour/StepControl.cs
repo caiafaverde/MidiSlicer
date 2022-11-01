@@ -29,7 +29,7 @@ namespace FourByFour
 			_stepCount = stepCount;
 			_bars = bars;
 			Controls.Clear();
-			CheckBox ch;
+			StepToggle ch;
 			var left = 0;
 			for (var k = 0; k < bars; ++k)
 			{
@@ -37,10 +37,16 @@ namespace FourByFour
 				{
 					//for (var j = 0; j < 4; ++j)
 					{
-						ch = new CheckBox();
+						ch = new StepToggle();
 						Controls.Add(ch);
-						ch.Appearance = Appearance.Button;
-						ch.Size = new Size(16, Height);
+						//ch.Appearance = Appearance.Button;
+						//ch.Size = new Size(16, Height);
+						ch.ActiveLedColor = Color.Yellow;
+						ch.InactiveLedColor = Color.Gray;
+						ch.Bevel.InnerBorder = true;
+						ch.Bevel.OutterBorder = true;
+						ch.Bevel.Style = BevelStyle.FrameRaised;
+
 						ch.Location = new Point(left, 0);
 						ch.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
 						left += ch.Size.Width;
@@ -115,11 +121,11 @@ namespace FourByFour
 			public bool this[int index] 
 			{
 				get {
-					var ch = _controls[index] as CheckBox;
+					var ch = _controls[index] as StepToggle;
 					return ch.Checked;
 				}
 				set {
-					var ch = _controls[index] as CheckBox;
+					var ch = _controls[index] as StepToggle;
 					ch.Checked = value;
 				}
 
@@ -152,20 +158,20 @@ namespace FourByFour
 			public void CopyTo(bool[] array, int arrayIndex)
 			{
 				for(int ic=_controls.Count,i=0;i<ic; ++i)
-					array[arrayIndex + i] = (_controls[i] as CheckBox).Checked;
+					array[arrayIndex + i] = (_controls[i] as StepToggle).Checked;
 			}
 
 			public IEnumerator<bool> GetEnumerator()
 			{
 				for (int ic = _controls.Count, i = 0; i < ic; ++i)
-					yield return (_controls[i] as CheckBox).Checked;
+					yield return (_controls[i] as StepToggle).Checked;
 			}
 
 			public int IndexOf(bool item)
 			{
 				for (int ic = _controls.Count, i = 0; i < ic; ++i)
 				{
-					var ch = _controls[i] as CheckBox;
+					var ch = _controls[i] as StepToggle;
 					if (item == ch.Checked)
 						return i;
 				}

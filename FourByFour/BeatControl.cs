@@ -13,6 +13,8 @@ namespace FourByFour
 	using Ins = KeyValuePair<string, byte>;
 	public partial class BeatControl : UserControl
 	{
+		static IList<bool> _rythmClipboard;
+		
 		static readonly object _DeleteKey = new object();
 		static readonly object _BarsChangedKey = new object();
 		static readonly object _NoteIdChangedKey = new object();
@@ -146,9 +148,127 @@ namespace FourByFour
 			(Events[_DeleteKey] as EventHandler)?.Invoke(this, args);
 		}
 
-		private void DeleteButton_Click(object sender, EventArgs e)
+		private void MenuButton_Click(object sender, EventArgs e)
 		{
+			this.contextMenuStrip1.Show(Control.MousePosition);
+		}
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+			this.pasteToolStripMenuItem.Enabled = (_rythmClipboard != null);
+			//fill Generate subitems
+			this.generateToolStripMenuItem.DropDownItems.Clear();
+
+			//Add Simple E rythms ;2..Count for relatively prime numbers
+			//also might be interesting for half-intervals
+			for (int j = 3; j <= this.StepControl.StepCount; j++)
+			{
+				//comment this if interested in odd rythms
+				if (this.StepControl.StepCount % j != 0) 
+					continue;
+
+				for (int i = 2; i < j; i++)
+				{
+					if (Rythm.GCD(i, j) != 1)
+						continue;
+					AddEuclRythmMenuItem(i, j);
+				}
+			}
+			//TODO - mayde add sums of smaller mutially prime-nased intervals, e.g. for 16 E(x,5)+E(y,9)
+			//Or move that to custom rythm generator
+        }
+
+		private void AddEuclRythmMenuItem(int a, int b)
+        {
+			var rythm = Rythm.Euclidean(a, b);
+			var tsmi = new ToolStripMenuItem();
+			tsmi.Text = $"E({a}, {b})";
+			tsmi.Tag = rythm;
+			tsmi.Click += AddRythmFromEucl_Click;
+			this.generateToolStripMenuItem.DropDownItems.Add(tsmi);
+		}
+
+        private void AddRythmFromEucl_Click(object sender, EventArgs e)
+        {
+           if (sender is ToolStripMenuItem)
+            {
+				var tag = ((ToolStripMenuItem)sender).Tag;
+				if (tag is Rythm)
+					FillStepsWith((tag as Rythm).Steps);
+
+			}
+        }
+
+        private void FillStepsWith(IList<bool> data)
+        {
+			for (int i = 0, j = 0; i < this.StepControl.StepCount * this.StepControl.Bars; i++, j++)
+			{
+				if (j == data.Count)
+					j = 0;
+				this.Steps[i] = data[j];
+			}
+		}
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			FillStepsWith(new bool[this.StepControl.StepCount * this.StepControl.Bars]);
+
+		}
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 			OnDelete(EventArgs.Empty);
 		}
-	}
+
+        private void stepLeftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			var rythm = Rythm.FromBool(this.Steps);
+			var rythmStr = rythm.ToString();
+			var newrythm = string.Concat(rythmStr.Substring(1), rythmStr[0]);
+			FillStepsWith(Rythm.FromBeatString(newrythm).Steps);
+		}
+
+        private void stepRightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			var rythm = Rythm.FromBool(this.Steps);
+			var rythmStr = rythm.ToString();
+			var newrythm = string.Concat(rythmStr[rythmStr.Length - 1], rythmStr.Substring(0, rythmStr.Length -1));
+			FillStepsWith(Rythm.FromBeatString(newrythm).Steps);
+		}
+
+        private void intervalLeftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			var rythm = Rythm.FromBool(this.Steps);
+			var rythmStr = rythm.ToIntervalString();
+			if (string.IsNullOrWhiteSpace(rythmStr))
+				return;
+			if (rythmStr.Length == 1)
+				return;
+			var newrythm = string.Concat(rythmStr.Substring(1), rythmStr[0]);
+			FillStepsWith(Rythm.FromIntervalString(newrythm).Steps);
+		}
+
+        private void intervalRightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			var rythm = Rythm.FromBool(this.Steps);
+			var rythmStr = rythm.ToIntervalString();
+			if (string.IsNullOrWhiteSpace(rythmStr))
+				return;
+			if (rythmStr.Length == 1)
+				return;
+			var newrythm = string.Concat(rythmStr[rythmStr.Length - 1], rythmStr.Substring(0, rythmStr.Length - 1));
+			FillStepsWith(Rythm.FromIntervalString(newrythm).Steps);
+		}
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			_rythmClipboard = this.Steps;
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			FillStepsWith(_rythmClipboard);
+			_rythmClipboard = null;
+		}
+    }
 }

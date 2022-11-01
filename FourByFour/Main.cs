@@ -358,7 +358,7 @@ namespace FourByFour
 			beat.Delete += Beats_Delete;
 			BeatsPanel.Controls.Add(beat);
 			beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
-			//beat.NoteId = 46; // Open Hat
+			beat.NoteId = 46; // Open Hat
 			beat.Bars = (int)BarsUpDown.Value;
 			beat.Delete += Beats_Delete;
 			BeatsPanel.Controls.Add(beat);

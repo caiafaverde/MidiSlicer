@@ -10,4 +10,8 @@ In the process, MidiSlicer moved from a first class application to just another 
 
 I wrote a [comprehensive article at codeproject](https://www.codeproject.com/Articles/5272315/Midi-A-Windows-MIDI-Library-in-Csharp) on using this library, and I recommend using it. The latest version of the code is always here at GitHub.
 
-THe primal goal of this fork is to experiment with Euclidean rythms as well as sending drum sequences to Korg Volka Sample.
+=======================
+
+The primal goal of this fork is to experiment with Euclidean rythms as well as sending drum sequences to Korg Volca Sample (and maybe some other drum machines).
+
+Also, another direction is recording of CC messages from external MIDI controls and including them into generated drum sequences (thus allowing to handle in real time other drum machine parameters like velocity, sound parameteres etc)
