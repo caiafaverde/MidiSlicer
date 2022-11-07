@@ -268,55 +268,10 @@ namespace FourByFour
 				case 0: // none
 					break;
 				case 1: // Basic Empty
-					_MakeBasicKit();
+					_MakeBasicKit(new byte[] { 36,40,42,46});
 					break;
-				case 2: // break
-					_MakeBasicKit();
-					for(int ic=(int)BarsUpDown.Value,i=0;i<ic;++i)
-					{
-						var beat = BeatsPanel.Controls[0] as BeatControl;
-						beat.Steps[0+(i*16)] = true;
-						beat.Steps[6 + (i * 16)] = true;
-						beat.Steps[10 + (i * 16)] = true;
-						beat = BeatsPanel.Controls[1] as BeatControl;
-						beat.Steps[4 + (i * 16)] = true;
-						beat.Steps[12 + (i * 16)] = true;
-						beat = BeatsPanel.Controls[2] as BeatControl;
-						for (var j = 0; j < 16; ++j)
-							beat.Steps[j+(i*16)] = true;
-						beat.Steps[14 + (i * 16)] = false;
-						beat = BeatsPanel.Controls[3] as BeatControl;
-						beat.Steps[14 + (i * 16)] = true;
-					}
-					break;
-				case 3: // house
-					_MakeBasicKit();
-					for (int ic = (int)BarsUpDown.Value, i = 0; i < ic; ++i)
-					{
-						var beat = BeatsPanel.Controls[0] as BeatControl;
-						beat.Steps[0 + (i * 16)] = true;
-						beat.Steps[4 + (i * 16)] = true;
-						beat.Steps[8 + (i * 16)] = true;
-						beat.Steps[12 + (i * 16)] = true;
-						beat = BeatsPanel.Controls[1] as BeatControl;
-						beat.Steps[4 + (i * 16)] = true;
-						beat.Steps[12 + (i * 16)] = true;
-						beat = BeatsPanel.Controls[2] as BeatControl;
-						for (var j = 0; j < 16; ++j)
-							beat.Steps[j + (i * 16)] = true;
-						beat.Steps[2 + (i * 16)] = false;
-						beat.Steps[6 + (i * 16)] = false;
-						beat.Steps[10 + (i * 16)] = false;
-						beat.Steps[14 + (i * 16)] = false;
-						beat.Steps[15 + (i * 16)] = false;
-						beat = BeatsPanel.Controls[3] as BeatControl;
-						beat.Steps[2 + (i * 16)] = true;
-						beat.Steps[6 + (i * 16)] = true;
-						beat.Steps[10 + (i * 16)] = true;
-						beat.Steps[14 + (i * 16)] = true;
-					}
-					break;
-				case 4:
+				
+				case 2:
 					for (byte i=0; i < 10; i++)
                     {
 						var beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value) { Channel = i};
@@ -325,6 +280,9 @@ namespace FourByFour
 						beat.Delete += Beats_Delete;
 						BeatsPanel.Controls.Add(beat);
 					}
+					break;
+				case 3:
+					_MakeBasicKit(new byte[] { 35, 38, 45, 48, 49, 46, 42});
 					break;
 			}
 		}
@@ -339,31 +297,17 @@ namespace FourByFour
 		//CY     49             49
 		//OH     46             46
 		//CH     42             42, 44
+		// Note that TR-06 is velocity-dependent (Volca Sample sends CC for every shannel to set velocity)
 
-		void _MakeBasicKit()
+		void _MakeBasicKit(byte[] notes)
 		{
-			var beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
-			beat.NoteId = 36; // Bass Drum 1
-			//beat.Bars = (int)BarsUpDown.Value;
-			beat.Delete += Beats_Delete;
-			BeatsPanel.Controls.Add(beat);
-			beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
-			beat.NoteId = 40; // Electric Snare 1
-			//beat.Bars = (int)BarsUpDown.Value;
-			beat.Delete += Beats_Delete;
-			BeatsPanel.Controls.Add(beat);
-			beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
-			beat.NoteId = 42; // Closed Hat
-			//beat.Bars = (int)BarsUpDown.Value;
-			beat.Delete += Beats_Delete;
-			BeatsPanel.Controls.Add(beat);
-			beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
-			beat.NoteId = 46; // Open Hat
-			beat.Bars = (int)BarsUpDown.Value;
-			beat.Delete += Beats_Delete;
-			BeatsPanel.Controls.Add(beat);
+			foreach (var noteId in notes)
+			{
+				var beat = new BeatControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value);
+				beat.NoteId = noteId;
+				beat.Delete += Beats_Delete;
+				BeatsPanel.Controls.Add(beat);
+			}
 		}
-
-        
     }
 }

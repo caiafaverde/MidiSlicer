@@ -114,7 +114,7 @@ namespace FourByFour
                 ones.Add(new List<bool>() { true });
             }
             int zeroes = length - beats;
-            while (zeroes != 0)
+            while (zeroes > 1)
             {
                 foreach (var subOne in ones)
                 {
@@ -124,6 +124,10 @@ namespace FourByFour
                     subOne.Add(false);
                 }
             }
+            
+            if (zeroes == 1)
+                ones[ones.Count - 1].Add(false);
+
             //2 phase - append shortest intervals
             while (true)
             {

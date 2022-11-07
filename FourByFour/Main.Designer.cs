@@ -171,9 +171,8 @@
             this.PatternComboBox.Items.AddRange(new object[] {
             "(None)",
             "Basic Empty",
-            "Break",
-            "House",
-            "Basic Volca"});
+            "Basic Volca",
+            "Basic Roland TR-06"});
             this.PatternComboBox.Name = "PatternComboBox";
             this.PatternComboBox.Size = new System.Drawing.Size(121, 26);
             this.PatternComboBox.SelectedIndexChanged += new System.EventHandler(this.PatternComboBox_SelectedIndexChanged);
