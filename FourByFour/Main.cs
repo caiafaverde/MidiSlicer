@@ -180,22 +180,25 @@ namespace FourByFour
 			var trks = new List<MidiSequence>(BeatsPanel.Controls.Count);
 			foreach (var ctl in BeatsPanel.Controls)
 			{
-				var beat = ctl as BeatControl;
-				// get the note for the drum
-				var note = beat.NoteId;
-				// it's easier to use a note map
-				// to build the drum sequence
-				var noteMap = new List<MidiNote>();
-				for (int ic = beat.Steps.Count, i = 0; i < ic; ++i)
+				if (ctl is BeatControl)
 				{
-					// if the step is pressed create 
-					// a note for it
-					if (beat.Steps[i])
-						noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1)); ;
+					var beat = ctl as BeatControl;
+					// get the note for the drum
+					var note = beat.NoteId;
+					// it's easier to use a note map
+					// to build the drum sequence
+					var noteMap = new List<MidiNote>();
+					for (int ic = beat.Steps.Count, i = 0; i < ic; ++i)
+					{
+						// if the step is pressed create 
+						// a note for it
+						if (beat.Steps[i])
+							noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1)); ;
+					}
+					// convert the note map to a sequence
+					// and add it to our working tracks
+					trks.Add(MidiSequence.FromNoteMap(noteMap));
 				}
-				// convert the note map to a sequence
-				// and add it to our working tracks
-				trks.Add(MidiSequence.FromNoteMap(noteMap));
 			}
 			// now we merge the sequences into one
 			var t = MidiSequence.Merge(trks);
@@ -308,6 +311,8 @@ namespace FourByFour
 				beat.Delete += Beats_Delete;
 				BeatsPanel.Controls.Add(beat);
 			}
+
+			BeatsPanel.Controls.Add(new ParameterControl((int)this.BarsUpDown.Value, (int)this.StepsUpDown.Value));
 		}
     }
 }
