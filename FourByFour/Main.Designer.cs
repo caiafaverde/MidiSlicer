@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.BeatsPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BeatsPanel = new FourByFour.TrackContainer();
             this.SaveMidiFile = new System.Windows.Forms.SaveFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
@@ -241,7 +241,7 @@
         }
 
         #endregion
-		private System.Windows.Forms.FlowLayoutPanel BeatsPanel;
+		private FourByFour.TrackContainer BeatsPanel;
 		private System.Windows.Forms.SaveFileDialog SaveMidiFile;
 		//private System.Windows.Forms.ComboBox PatternComboBox;
         private System.Windows.Forms.ToolStrip toolStrip1;

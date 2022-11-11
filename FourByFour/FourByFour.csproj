@@ -91,6 +91,9 @@
     <Compile Include="StepToggle.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TrackContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="BeatControl.resx">
       <DependentUpon>BeatControl.cs</DependentUpon>
     </EmbeddedResource>

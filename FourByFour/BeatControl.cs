@@ -155,6 +155,8 @@ namespace FourByFour
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
+			this.channelToolStripMenuItem.Text = $"Channel {Channel + 1}";
+			
 			this.pasteToolStripMenuItem.Enabled = (_rythmClipboard != null);
 			//fill Generate subitems
 			this.generateToolStripMenuItem.DropDownItems.Clear();
@@ -174,7 +176,7 @@ namespace FourByFour
 					AddEuclRythmMenuItem(i, j);
 				}
 			}
-			//TODO - mayde add sums of smaller mutially prime-nased intervals, e.g. for 16 E(x,5)+E(y,9)
+			//TODO - mayde add sums of smaller mutially prime-based intervals, e.g. for 16 E(x,7)+E(y,9)
 			//Or move that to custom rythm generator
         }
 
@@ -217,6 +219,7 @@ namespace FourByFour
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+			//Do we really need this one now?
 			OnDelete(EventArgs.Empty);
 		}
 
