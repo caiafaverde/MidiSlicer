@@ -15,6 +15,8 @@ namespace FourByFour
     public partial class Main : Form
     {
         MidiStream _play;
+        Random _rnd = new Random(Convert.ToInt32(DateTime.Now.Ticks & 0x7fffffff));
+
         public Main()
         {
             InitializeComponent();
@@ -68,14 +70,10 @@ namespace FourByFour
             var mf = _CreateMidiFile();
             var stm = _play;
 
-            // our current cursor pos
-            int pos = 0;
-            // for tracking deltas
-            var ofs = 0;
+           
             // merge our file for playback
             var seq = MidiSequence.Merge(mf.Tracks);
-            // the number of events in the seq
-            int len = seq.Events.Count;
+           
             // stores the next set of events
             var eventList = new List<MidiEvent>(MAX_EVENT_COUNT);
 
@@ -85,50 +83,59 @@ namespace FourByFour
             stm.Start();
 
             // first set the timebase
-            stm.TimeBase = mf.TimeBase;
+            stm.TimeBase = MidiFile.DefaultTimeBase;
 
             // set up our send complete handler
             stm.SendComplete += delegate (object s, EventArgs ea)
             {
-                try
+                try //DONT USE ANY EXTERNAL VARIABLES!!!!!!!!
                 {
                     BeginInvoke(new Action(delegate ()
                     {
+                        var stream =s as MidiStream;
                         // clear the list	
-                        eventList.Clear();
-                        mf = _CreateMidiFile();
-                        seq = MidiSequence.Merge(mf.Tracks);
-                        ofs = 0;
-                        len = seq.Events.Count;
+                        //eventList.Clear();
+                        var evtList = new List<MidiEvent>();
+                        var midiFile = _CreateMidiFile();
+                        var seqq = MidiSequence.Merge(midiFile.Tracks);
+                        var ofss = 0;
+                        var poss = 0;
+                        var lenn = seq.Events.Count;
                         // iterate through the next events
-                        var next = pos + MAX_EVENT_COUNT;
-                        for (; pos < next && ofs <= RATE_TICKS; ++pos)
+                        var nextt = poss + MAX_EVENT_COUNT;
+                        for (; poss < nextt && ofss <= RATE_TICKS; ++poss)
 
                         {
                             // if it's past the end, loop it
-                            if (len <= pos)
+                            if (lenn <= poss)
                             {
-                                pos = 0;
+                                poss = 0;
                                 break;
                             }
-                            var ev = seq.Events[pos];
-                            ofs += ev.Position;
-                            if (ev.Position < RATE_TICKS && RATE_TICKS < ofs)
+                            var ev = seqq.Events[poss];
+                            ofss += ev.Position;
+                            if (ev.Position < RATE_TICKS && RATE_TICKS < ofss)
                                 break;
                             // otherwise add the next event
-                            eventList.Add(ev);
+                            evtList.Add(ev);
                         }
                         // send the list of events
-                        if (MidiStreamState.Closed != stm.State)
-                            stm.SendDirect(eventList);
+                        if (MidiStreamState.Closed != stream.State)
+                            stream.SendDirect(evtList);
                     }));
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    System.Diagnostics.Trace.WriteLine($"Ex {ex.Message} @ {ex.StackTrace}");
                 }
 
             };
+            // our current cursor pos
+            int pos = 0;
+            // for tracking deltas
+            var ofs = 0;
+            // the number of events in the seq
+            int len = seq.Events.Count;
             // add the first events
             for (pos = 0; pos < MAX_EVENT_COUNT && ofs <= RATE_TICKS; ++pos)
             {
@@ -152,6 +159,7 @@ namespace FourByFour
 
         MidiFile _CreateMidiFile()
         {
+            System.Diagnostics.Trace.WriteLine($">> _CreateMidiFile {DateTime.Now}");
             var file = new MidiFile();
             // we'll need a track 0 for our tempo map
             var track0 = new MidiSequence();
@@ -191,8 +199,18 @@ namespace FourByFour
                 {
                     // if the step is pressed create 
                     // a note for it
-                    if (beat.Steps[i])
-                        noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1)); ;
+                    //if (beat.Steps[i])
+                    //    noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1)); ;
+
+                    //TAKES TOO LONG...
+                    var prob = beat.Probabilities[i];
+                    if (prob == 1f)
+                        noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1));
+                    else if (prob != 0f && (prob >= _rnd.NextDouble()))
+                    {
+                        noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1));
+                    }
+
                 }
                 // convert the note map to a sequence
                 // and add it to our working tracks
@@ -204,6 +222,7 @@ namespace FourByFour
             track1 = MidiSequence.Merge(track1, t, trackEnd);
             // .. and add it to the file
             file.Tracks.Add(track1);
+            System.Diagnostics.Trace.WriteLine("<< _CreateMidiFile");
             return file;
         }
         protected override void OnClosing(CancelEventArgs e)

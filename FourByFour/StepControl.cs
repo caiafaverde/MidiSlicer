@@ -16,6 +16,8 @@ namespace FourByFour
 		static readonly object _BarsChangedKey = new object();
 		static readonly object _StepCountChangedKey = new object();
 		_StepList _steps;
+		_ProbList _probs;
+		
 		int _bars;
 		int _stepCount = 16;
 		public StepControl()
@@ -31,6 +33,9 @@ namespace FourByFour
 			Controls.Clear();
 			StepToggle ch;
 			var left = 0;
+
+			_probs = new _ProbList(bars*stepCount);
+
 			for (var k = 0; k < bars; ++k)
 			{
 				for (var i = 0; i < stepCount; ++i)
@@ -50,16 +55,27 @@ namespace FourByFour
 						ch.Location = new Point(left, 0);
 						ch.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
 						left += ch.Size.Width;
+
+                        ch.MouseClick += Ch_MouseClick;
+						ch.Tag = k * 4 + i;
 					}
 					if ((i + k + 1)%4== 0)
 						left += 4;
 				}
 			}
 			_steps = new _StepList(Controls);
+			
+			
 			Size = new Size(left, 26);
 			MinimumSize = new Size(left, 26);
 		}
-		public int Bars {
+
+        private void Ch_MouseClick(object sender, MouseEventArgs e)
+        {
+            ((sender as Control).Parent as StepControl).Probs[Convert.ToInt32((sender as Control).Tag)] = (sender as StepToggle).Probability;
+        }
+
+        public int Bars {
 			get {
 				return _bars;
 			}
@@ -109,8 +125,11 @@ namespace FourByFour
 			remove { Events.RemoveHandler(_StepCountChangedKey, value); }
 		}
 
+		public IList<float> Probs => _probs;
 
 		public IList<bool> Steps { get { return _steps; } }
+
+
 		private sealed class _StepList : IList<bool>
 		{
 			readonly ControlCollection _controls;
@@ -148,7 +167,7 @@ namespace FourByFour
 			{
 				for(int ic=_controls.Count,i = 0;i<ic;++i)
 				{
-					var ch = _controls[i] as CheckBox;
+					var ch = _controls[i] as StepToggle;
 					if (item == ch.Checked)
 						return true;
 				}
@@ -184,6 +203,101 @@ namespace FourByFour
 			}
 
 			public bool Remove(bool item)
+			{
+				throw new NotSupportedException("The list is fixed size");
+			}
+
+			public void RemoveAt(int index)
+			{
+				throw new NotSupportedException("The list is fixed size");
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+		}
+
+		private sealed class _ProbList : IList<float>
+		{
+			float[] _back;
+			
+			//readonly ControlCollection _controls;
+			internal _ProbList(int cnt)
+			{
+				//_controls = controls;
+				_back = new float[cnt];
+			}
+			public float this[int index]
+			{
+				get
+				{
+					return _back[index];
+					//var ch = _controls[index] as StepToggle;
+					//return ch.Probability;
+				}
+				set
+				{
+					//var ch = _controls[index] as StepToggle;
+					//ch.Probability = value;
+					_back[index] = value;
+				}
+
+			}
+
+			public int Count { get { return _back.Length; } }
+			public bool IsReadOnly { get { return false; } }
+
+			public void Add(float item)
+			{
+				throw new NotSupportedException("The list is fixed size");
+			}
+
+			public void Clear()
+			{
+				throw new NotSupportedException("The list is fixed size");
+			}
+
+			public bool Contains(float item)
+			{
+				for (int ic = _back.Length, i = 0; i < ic; ++i)
+				{
+					//var ch = _controls[i] as StepToggle;
+					if (item == _back[i])
+						return true;
+				}
+				return false;
+			}
+
+			public void CopyTo(float[] array, int arrayIndex)
+			{
+				for (int ic = _back.Length, i = 0; i < ic; ++i)
+					array[arrayIndex + i] = _back[i];
+			}
+
+			public IEnumerator<float> GetEnumerator()
+			{
+				for (int ic = _back.Length, i = 0; i < ic; ++i)
+					yield return _back[i];
+			}
+
+			public int IndexOf(float item)
+			{
+				for (int ic = _back.Length, i = 0; i < ic; ++i)
+				{
+					//var ch = _controls[i] as StepToggle;
+					if (item == _back[i])
+						return i;
+				}
+				return -1;
+			}
+
+			public void Insert(int index, float item)
+			{
+				throw new NotSupportedException("The list is fixed size");
+			}
+
+			public bool Remove(float item)
 			{
 				throw new NotSupportedException("The list is fixed size");
 			}

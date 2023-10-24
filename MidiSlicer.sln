@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MidiKeys", "MidiKeys\MidiKe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MidiDisplay", "MidiDisplay\MidiDisplay.csproj", "{3061C8D7-5A9D-4E24-8A43-6F69887F4E0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicTheory", "MusicTheory\MusicTheory.csproj", "{86CB8DA6-5443-4969-B7DF-D6C1B8313216}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,18 @@ Global
 		{3061C8D7-5A9D-4E24-8A43-6F69887F4E0D}.Release|x64.Build.0 = Release|Any CPU
 		{3061C8D7-5A9D-4E24-8A43-6F69887F4E0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{3061C8D7-5A9D-4E24-8A43-6F69887F4E0D}.Release|x86.Build.0 = Release|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Debug|x64.Build.0 = Debug|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Debug|x86.Build.0 = Debug|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Release|x64.ActiveCfg = Release|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Release|x64.Build.0 = Release|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Release|x86.ActiveCfg = Release|Any CPU
+		{86CB8DA6-5443-4969-B7DF-D6C1B8313216}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

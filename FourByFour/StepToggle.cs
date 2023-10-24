@@ -10,6 +10,21 @@ namespace FourByFour
         private Color _activeLedColor = Color.LightGreen;
         private Color _inactiveLedColor = Color.Green;
 
+        private float _prob = 0f;
+        public float Probability 
+        {
+            get => _prob; 
+            set 
+            {
+                _prob = value;
+                if (_prob < 0f)
+                    _prob = 0f;
+                if (_prob > 1f)
+                    _prob = 1f;
+                this.Checked = _prob != 0f;
+            } 
+        }
+
         public StepToggle()
         {
             base.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
@@ -18,12 +33,26 @@ namespace FourByFour
             base.SetStyle(ControlStyles.ResizeRedraw, true);
             base.SetStyle(ControlStyles.Selectable, true);
             base.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            base.SetStyle(ControlStyles.StandardClick, true);
         }
 
         protected override void Draw(Graphics g, Rectangle r)
         {
             base.Draw(g, r);
             DrawToggle(g);
+        }
+
+        int Clip(int a, int b)
+        {
+            if (a + b < 0)
+                return 0;
+            else if (a + b > 256) return 255;
+            else return a + b;
+        }
+
+        Color Add(Color thisColor, int value)
+        {
+            return Color.FromArgb(thisColor.A, Clip(thisColor.R, value), Clip(thisColor.G, value), Clip(thisColor.B, value));
         }
 
         private void DrawToggle(Graphics g)
@@ -33,7 +62,10 @@ namespace FourByFour
 
             if (this.Pressed)
             {
-                brush = new SolidBrush(this._activeLedColor);
+                if (this.Probability != 1f)
+                    brush = new SolidBrush(Add(this._activeLedColor, -20));
+                else
+                    brush = new SolidBrush(this._activeLedColor);
             }
             else
             {
@@ -41,6 +73,15 @@ namespace FourByFour
             }
 
             g.FillRectangle(brush, workRectangle);
+
+            if (this.Probability != 1f && this.Probability != 0f)
+            {
+                using (Brush brush3 = new SolidBrush(Color.Black))
+                {
+                    var font = new Font(SystemFonts.SmallCaptionFont, FontStyle.Regular);
+                    g.DrawString($"{this.Probability:0.0}", this.Font, brush3, workRectangle.Top + 2, workRectangle.Left+ 2);
+                }
+            }
         }
 
         public Color ActiveLedColor
@@ -102,15 +143,33 @@ namespace FourByFour
             }
         }
 
-        protected override void OnClick(EventArgs e)
+        //protected override void OnClick(EventArgs e)
+        protected override void OnMouseClick(MouseEventArgs e)
         {
             if (base.Enabled)
             {
-                this.Checked = !this.Checked;
+                if (e.Button == MouseButtons.Left)
+                {
+                    this.Checked = !this.Checked;
+                    this._prob = (this.Checked) ? 1f : 0f;
+                }
+                else if (e.Button == MouseButtons.Middle)
+                {
+                    this.Checked = true;
+                    if (this._prob == 1f)
+                        this._prob = 0f;
+                    this._prob += 0.1f;
+                    this.Invalidate();
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    this.Checked = false;
+                    this._prob = 0f;
+                }
 
                 try
                 {
-                    base.OnClick(e);
+                    base.OnMouseClick(e);
                 }
                 catch (Exception exception)
                 {

@@ -142,7 +142,11 @@ namespace FourByFour
 		}
 		public IList<bool> Steps {
 			get { return StepControl.Steps; }
+
 		}
+
+		public IList<float> Probabilities => StepControl.Probs;
+
 		protected void OnDelete(EventArgs args)
 		{
 			(Events[_DeleteKey] as EventHandler)?.Invoke(this, args);
