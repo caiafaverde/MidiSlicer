@@ -214,6 +214,7 @@ namespace FourByFour
 				if (j == data.Count)
 					j = 0;
 				this.Steps[i] = data[j];
+				this.Probabilities[i] = data[j] ? 100 : 0;
 			}
 		}
 

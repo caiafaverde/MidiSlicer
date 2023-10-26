@@ -190,19 +190,19 @@ namespace FourByFour
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    this.Checked = !this.Checked;
-                    this._prob = (this.Checked) ? 100 : 0;
+                    this._checked = !this._checked;
+                    this._prob = (this._checked) ? 100 : 0;
                     this.SubSteps = SubSteps.One;
                 }
                 else if (e.Button == MouseButtons.Middle)
                 {
-                    this.Checked = true;
+                    this._checked = true;
                     if (this._prob >= 100)
                         this._prob = 0;
                     this._prob += 10;
                     
                 }
-                else if (e.Button == MouseButtons.Right) //substeps programming?? 2-3-4-6
+                else if (e.Button == MouseButtons.Right && this._checked) //substeps programming?? 2-3-4-6
                 {
                     //this.Checked = false;
                     //this._prob = 0;
@@ -314,6 +314,8 @@ namespace FourByFour
                 if (this._checked != value)
                 {
                     this._checked = value;
+                    this._prob = (this._checked) ? 100 : 0;
+                    this._subSteps = SubSteps.One;
                     base.Invalidate();
                     this.OnCheckedChanged(new EventArgs());
                 }

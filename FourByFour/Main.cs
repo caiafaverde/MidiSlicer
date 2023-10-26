@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -103,25 +104,25 @@ namespace FourByFour
                         var lenn = seq.Events.Count;
                         // iterate through the next events
                         var nextt = poss + MAX_EVENT_COUNT;
-                        for (; poss < nextt && ofss <= RATE_TICKS; ++poss)
+                        //for (; poss < nextt && ofss <= RATE_TICKS; ++poss)
 
-                        {
-                            // if it's past the end, loop it
-                            if (lenn <= poss)
-                            {
-                                poss = 0;
-                                break;
-                            }
-                            var ev = seqq.Events[poss];
-                            ofss += ev.Position;
-                            if (ev.Position < RATE_TICKS && RATE_TICKS < ofss)
-                                break;
-                            // otherwise add the next event
-                            evtList.Add(ev);
-                        }
+                        //{
+                        //    // if it's past the end, loop it
+                        //    if (lenn <= poss)
+                        //    {
+                        //        poss = 0;
+                        //        break;
+                        //    }
+                        //    var ev = seqq.Events[poss];
+                        //    ofss += ev.Position;
+                        //    if (ev.Position < RATE_TICKS && RATE_TICKS < ofss)
+                        //        break;
+                        //    // otherwise add the next event
+                        //    evtList.Add(ev);
+                        //}
                         // send the list of events
                         if (MidiStreamState.Closed != stream.State)
-                            stream.SendDirect(evtList);
+                            stream.SendDirect(/*evtList*/seq.Events);
                     }));
                 }
                 catch (Exception ex)
@@ -137,23 +138,23 @@ namespace FourByFour
             // the number of events in the seq
             int len = seq.Events.Count;
             // add the first events
-            for (pos = 0; pos < MAX_EVENT_COUNT && ofs <= RATE_TICKS; ++pos)
-            {
-                // if it's past the end, loop it
-                if (len <= pos)
-                {
-                    pos = 0;
-                    break;
-                }
-                var ev = seq.Events[pos];
-                ofs += ev.Position;
-                if (ev.Position < RATE_TICKS && RATE_TICKS < ofs)
-                    break;
-                // otherwise add the next event
-                eventList.Add(ev);
-            }
+            //for (pos = 0; pos < MAX_EVENT_COUNT && ofs <= RATE_TICKS; ++pos)
+            //{
+            //    // if it's past the end, loop it
+            //    if (len <= pos)
+            //    {
+            //        pos = 0;
+            //        break;
+            //    }
+            //    var ev = seq.Events[pos];
+            //    ofs += ev.Position;
+            //    if (ev.Position < RATE_TICKS && RATE_TICKS < ofs)
+            //        break;
+            //    // otherwise add the next event
+            //    eventList.Add(ev);
+            //}
             // send the list of events
-            stm.SendDirect(eventList);
+            stm.SendDirect(/*eventList*/seq.Events);
 
         }
 
@@ -233,7 +234,8 @@ namespace FourByFour
                 }
                 // convert the note map to a sequence
                 // and add it to our working tracks
-                trks.Add(MidiSequence.FromNoteMap(noteMap));
+                if (noteMap.Count != 0)
+                    trks.Add(MidiSequence.FromNoteMap(noteMap));
             }
             // now we merge the sequences into one
             var t = MidiSequence.Merge(trks);
@@ -272,6 +274,7 @@ namespace FourByFour
                     if (i >= beat.Steps.Count)
                         break;
                     beat.Steps[i] = steps[i];
+                    beat.Probabilities[i] = steps[i] ? 100 : 0;
                 }
             }
         }
@@ -287,6 +290,7 @@ namespace FourByFour
                     if (i >= beat.Steps.Count)
                         break;
                     beat.Steps[i] = steps[i];
+                    beat.Probabilities[i] = steps[i] ? 100 : 0;
                 }
             }
         }
