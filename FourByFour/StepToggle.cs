@@ -5,41 +5,18 @@ using System.Drawing.Drawing2D;
 
 namespace FourByFour
 {
-    public enum SubSteps : int
-    {
-        One = 1,
-        Two = 2,
-        Three = 3,
-        Four = 4,
-        Six = 6,
-        Flam
-    }
+
 
     public class StepToggle : ControlWithBevel
     {
         private Color _activeLedColor = Color.LightGreen;
         private Color _inactiveLedColor = Color.Green;
-
-        SubSteps _subSteps = SubSteps.One;
-        private int _prob = 0;
-        public int Probability 
+        DrumStep _ds;
+        public DrumStep DrumStep
         {
-            get => _prob; 
-            set 
-            {
-                _prob = value;
-                if (_prob < 0)
-                    _prob = 0;
-                if (_prob > 100)
-                    _prob = 1;
-                this.Checked = _prob != 0;
-            } 
-        }
-
-        public SubSteps SubSteps
-        { 
-            get { return _subSteps; }
-            set { _subSteps = value; }
+            get => _ds;
+            set
+            { _ds = value; Invalidate(); }
         }
 
         public StepToggle()
@@ -51,6 +28,7 @@ namespace FourByFour
             base.SetStyle(ControlStyles.Selectable, true);
             base.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             base.SetStyle(ControlStyles.StandardClick, true);
+            _ds = new DrumStep();
         }
 
         protected override void Draw(Graphics g, Rectangle r)
@@ -77,42 +55,43 @@ namespace FourByFour
             Brush brush;
             Rectangle workRectangle = this.WorkRectangle;
 
-            if (this.Pressed)
+            switch (this.DrumStep.Probability)
             {
-                if (this.Probability != 100)
+                default:
                     brush = new SolidBrush(Add(this._activeLedColor, -20));
-                else
+                    break;
+                case 100:
                     brush = new SolidBrush(this._activeLedColor);
-            }
-            else
-            {
-                brush = new SolidBrush(this._inactiveLedColor);
+                    break;
+                case 0:
+                    brush = new SolidBrush(this._inactiveLedColor);
+                    break;
             }
 
             g.FillRectangle(brush, workRectangle);
 
-            if (this.Probability != 0 && (int)_subSteps > 1)
+            if (this.DrumStep.Probability != 0 && (int)this.DrumStep.SubSteps > 1)
             {
                 //draw substeps
                 //g.DrawRectangle(new Pen(Brushes.Black), new Rectangle(new Point(workRectangle.X + 1, workRectangle.Y + 1), new Size(2, 2)));
                 DrawSubSteps(g, workRectangle);
             }
 
-            if (this.Probability != 100 && this.Probability != 0)
+            if (this.DrumStep.Probability != 100 && this.DrumStep.Probability != 0)
             {
                 using (Brush brush3 = new SolidBrush(Color.Black))
                 {
                     var font = new Font(SystemFonts.SmallCaptionFont, FontStyle.Regular);
-                    g.DrawString($"{this.Probability/100f:0.0}", this.Font, brush3, workRectangle.Top + 2, workRectangle.Left+ 2);
+                    g.DrawString($"{this.DrumStep.Probability /100f:0.0}", this.Font, brush3, workRectangle.Top + 2, workRectangle.Left+ 2);
                 }
             }
         }
 
         void DrawSubSteps(Graphics g, Rectangle workRectangle)
         {
-            if (_subSteps != SubSteps.Flam)
+            if (this.DrumStep.SubSteps != SubSteps.Flam)
             {
-                for (int i=0; i < (int)_subSteps; i++)
+                for (int i=0; i < (int)this.DrumStep.SubSteps; i++)
                 {
                     g.DrawRectangle(new Pen(Brushes.Black), new Rectangle(new Point(workRectangle.X + 1 + i * 4, workRectangle.Y + 1 ), new Size(2, 2)));
                 }
@@ -164,8 +143,8 @@ namespace FourByFour
             }
         }
 
-        private bool _checked;
-        private bool _pressed;
+        //private bool _checked;
+        //private bool _pressed;
         private bool _highlighted;
 
         public event EventHandler CheckedChanged;
@@ -190,28 +169,28 @@ namespace FourByFour
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    this._checked = !this._checked;
-                    this._prob = (this._checked) ? 100 : 0;
-                    this.SubSteps = SubSteps.One;
+                    //this._checked = !this._checked;
+                    this.DrumStep.Probability = this.DrumStep.Probability != 0 ? 0 : 100;
+                    this.DrumStep.SubSteps = SubSteps.One;
                 }
                 else if (e.Button == MouseButtons.Middle)
                 {
-                    this._checked = true;
-                    if (this._prob >= 100)
-                        this._prob = 0;
-                    this._prob += 10;
+                    //this._checked = true;
+                    if (this.DrumStep.Probability >= 100)
+                        this.DrumStep.Probability = 0;
+                    this.DrumStep.Probability += 10;
                     
                 }
-                else if (e.Button == MouseButtons.Right && this._checked) //substeps programming?? 2-3-4-6
+                else if (e.Button == MouseButtons.Right && this.DrumStep.Probability > 0) //substeps programming?? 2-3-4-6
                 {
                     //this.Checked = false;
                     //this._prob = 0;
-                    if (this.SubSteps == SubSteps.Flam)
-                        this.SubSteps = SubSteps.One;
+                    if (this.DrumStep.SubSteps == SubSteps.Flam)
+                        this.DrumStep.SubSteps = SubSteps.One;
                     else
-                        this.SubSteps++;
-                    if ((int)SubSteps == 5)
-                        SubSteps++;
+                        this.DrumStep.SubSteps++;
+                    if ((int)this.DrumStep.SubSteps == 5)
+                        this.DrumStep.SubSteps++;
                 }
                 this.Invalidate();
 
@@ -221,7 +200,7 @@ namespace FourByFour
                 }
                 catch (Exception exception)
                 {
-                    this.Pressed = false;
+                   //this.Pressed = false;
                     throw exception;
                 }
             }
@@ -233,24 +212,24 @@ namespace FourByFour
             base.OnEnter(e);
         }
 
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            if (base.Enabled && (e.KeyData == Keys.Space))
-            {
-                this.Pressed = true;
-            }
-            base.OnKeyDown(e);
-        }
+        //protected override void OnKeyDown(KeyEventArgs e)
+        //{
+        //    if (base.Enabled && (e.KeyData == Keys.Space))
+        //    {
+        //        this.Pressed = true;
+        //    }
+        //    base.OnKeyDown(e);
+        //}
 
-        protected override void OnKeyUp(KeyEventArgs e)
-        {
-            if (base.Enabled && (e.KeyData == Keys.Space))
-            {
-                this.Pressed = false;
-                this.OnClick(new EventArgs());
-            }
-            base.OnKeyDown(e);
-        }
+        //protected override void OnKeyUp(KeyEventArgs e)
+        //{
+        //    if (base.Enabled && (e.KeyData == Keys.Space))
+        //    {
+        //        this.Pressed = false;
+        //        this.OnClick(new EventArgs());
+        //    }
+        //    base.OnKeyDown(e);
+        //}
 
         protected override void OnLeave(EventArgs e)
         {
@@ -264,10 +243,10 @@ namespace FourByFour
             {
                 base.Focus();
             }
-            if (mevent.Button == MouseButtons.Left)
-            {
-                this.Pressed = true;
-            }
+            //if (mevent.Button == MouseButtons.Left)
+            //{
+            //    this.Pressed = true;
+            //}
             base.OnMouseDown(mevent);
         }
 
@@ -283,14 +262,14 @@ namespace FourByFour
             base.OnMouseLeave(e);
         }
 
-        protected override void OnMouseUp(MouseEventArgs mevent)
-        {
-            if (mevent.Button == MouseButtons.Left)
-            {
-                this.Pressed = false;
-            }
-            base.OnMouseUp(mevent);
-        }
+        //protected override void OnMouseUp(MouseEventArgs mevent)
+        //{
+        //    if (mevent.Button == MouseButtons.Left)
+        //    {
+        //        this.Pressed = false;
+        //    }
+        //    base.OnMouseUp(mevent);
+        //}
 
         protected override void OnTextChanged(EventArgs e)
         {
@@ -303,45 +282,45 @@ namespace FourByFour
             this.OnClick(new EventArgs());
         }
 
-        public bool Checked
-        {
-            get
-            {
-                return this._checked;
-            }
-            set
-            {
-                if (this._checked != value)
-                {
-                    this._checked = value;
-                    this._prob = (this._checked) ? 100 : 0;
-                    this._subSteps = SubSteps.One;
-                    base.Invalidate();
-                    this.OnCheckedChanged(new EventArgs());
-                }
-            }
-        }
+        //public bool Checked
+        //{
+        //    get
+        //    {
+        //        return this._checked;
+        //    }
+        //    set
+        //    {
+        //        if (this._checked != value)
+        //        {
+        //            //this._checked = value;
+        //            this.DrumStep.Probability = this.DrumStep.Probability != 0 ? 0: 100;
+        //            this.DrumStep.SubSteps = SubSteps.One;
+        //            base.Invalidate();
+        //            this.OnCheckedChanged(new EventArgs());
+        //        }
+        //    }
+        //}
 
 
-        protected bool Pressed
-        {
-            get
-            {
-                if (!this._pressed)
-                {
-                    return this._checked;
-                }
-                return true;
-            }
-            set
-            {
-                if (this._pressed != value)
-                {
-                    this._pressed = value;
-                    base.Invalidate();
-                }
-            }
-        }
+        //protected bool Pressed
+        //{
+        //    get
+        //    {
+        //        if (!this._pressed)
+        //        {
+        //            return this._checked;
+        //        }
+        //        return true;
+        //    }
+        //    set
+        //    {
+        //        if (this._pressed != value)
+        //        {
+        //            this._pressed = value;
+        //            base.Invalidate();
+        //        }
+        //    }
+        //}
 
         protected bool Highlighted
         {

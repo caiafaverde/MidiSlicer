@@ -204,13 +204,14 @@ namespace FourByFour
                     //    noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1)); ;
 
                     //TAKES TOO LONG...
-                    var prob = beat.Probabilities[i];
+                    var prob = beat.Steps[i].Probability;
                     if (prob == 100 || (prob != 0 && (prob / 100f >= _rnd.NextDouble())))
                     {
+                        System.Diagnostics.Trace.Write($"{i} ");
                         int position = i * (file.TimeBase / 4);
-                        if (beat.SubSteps[i] != SubSteps.Flam)
+                        if (beat.Steps[i].SubSteps != SubSteps.Flam)
                         {
-                            int nrOfNotes = (int)beat.SubSteps[i];
+                            int nrOfNotes = (int)beat.Steps[i].SubSteps;
                             int divider = nrOfNotes == 1 ? 1 : 2;
                             for (int ii = 0; ii < nrOfNotes ; ii++)
                             {
@@ -236,6 +237,7 @@ namespace FourByFour
                 // and add it to our working tracks
                 if (noteMap.Count != 0)
                     trks.Add(MidiSequence.FromNoteMap(noteMap));
+                System.Diagnostics.Trace.WriteLine("");
             }
             // now we merge the sequences into one
             var t = MidiSequence.Merge(trks);
@@ -267,14 +269,14 @@ namespace FourByFour
         {
             foreach (var beat in BeatsPanel.Beats)
             {
-                var steps = new List<bool>(beat.Steps);
+                var steps = new List<DrumStep>(beat.Steps);
                 beat.StepCount = (int)StepsUpDown.Value;
                 for (int ic = steps.Count, i = 0; i < ic; ++i)
                 {
                     if (i >= beat.Steps.Count)
                         break;
                     beat.Steps[i] = steps[i];
-                    beat.Probabilities[i] = steps[i] ? 100 : 0;
+                    //beat.Probabilities[i] = steps[i] ? 100 : 0;
                 }
             }
         }
@@ -283,14 +285,14 @@ namespace FourByFour
         {
             foreach (var beat in BeatsPanel.Beats)
             {
-                var steps = new List<bool>(beat.Steps);
+                var steps = new List<DrumStep>(beat.Steps);
                 beat.Bars = (int)BarsUpDown.Value;
                 for (int ic = steps.Count, i = 0; i < ic; ++i)
                 {
                     if (i >= beat.Steps.Count)
                         break;
                     beat.Steps[i] = steps[i];
-                    beat.Probabilities[i] = steps[i] ? 100 : 0;
+                    //beat.Probabilities[i] = steps[i] ? 100 : 0;
                 }
             }
         }

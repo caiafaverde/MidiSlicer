@@ -140,14 +140,14 @@ namespace FourByFour
 			add { Events.AddHandler(_BarsChangedKey, value); }
 			remove { Events.RemoveHandler(_BarsChangedKey, value); }
 		}
-		public IList<bool> Steps {
+		public IList<DrumStep> Steps {
 			get { return StepControl.Steps; }
 
 		}
 
-		public IList<int> Probabilities => StepControl.Probs;
+		//public IList<int> Probabilities => StepControl.Probs;
 
-		public IList<SubSteps> SubSteps => StepControl.SubSteps;
+		//public IList<SubSteps> SubSteps => StepControl.SubSteps;
 
 		protected void OnDelete(EventArgs args)
 		{
@@ -213,8 +213,7 @@ namespace FourByFour
 			{
 				if (j == data.Count)
 					j = 0;
-				this.Steps[i] = data[j];
-				this.Probabilities[i] = data[j] ? 100 : 0;
+				this.Steps[i] = new DrumStep( data[j] ? 100 : 0, SubSteps.One);
 			}
 		}
 
@@ -232,7 +231,7 @@ namespace FourByFour
 
         private void stepLeftToolStripMenuItem_Click(object sender, EventArgs e)
         {
-			var rythm = Rythm.FromBool(this.Steps);
+			var rythm = Rythm.FromBool(this.Steps.Select(s => s.Probability > 0).ToList());
 			var rythmStr = rythm.ToString();
 			var newrythm = string.Concat(rythmStr.Substring(1), rythmStr[0]);
 			FillStepsWith(Rythm.FromBeatString(newrythm).Steps);
@@ -240,7 +239,7 @@ namespace FourByFour
 
         private void stepRightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-			var rythm = Rythm.FromBool(this.Steps);
+			var rythm = Rythm.FromBool(this.Steps.Select(s => s.Probability > 0).ToList());
 			var rythmStr = rythm.ToString();
 			var newrythm = string.Concat(rythmStr[rythmStr.Length - 1], rythmStr.Substring(0, rythmStr.Length -1));
 			FillStepsWith(Rythm.FromBeatString(newrythm).Steps);
@@ -248,7 +247,7 @@ namespace FourByFour
 
         private void intervalLeftToolStripMenuItem_Click(object sender, EventArgs e)
         {
-			var rythm = Rythm.FromBool(this.Steps);
+			var rythm = Rythm.FromBool(this.Steps.Select(s => s.Probability > 0).ToList());
 			var rythmStr = rythm.ToIntervalString();
 			if (string.IsNullOrWhiteSpace(rythmStr))
 				return;
@@ -260,7 +259,7 @@ namespace FourByFour
 
         private void intervalRightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-			var rythm = Rythm.FromBool(this.Steps);
+			var rythm = Rythm.FromBool(this.Steps.Select(s => s.Probability > 0).ToList());
 			var rythmStr = rythm.ToIntervalString();
 			if (string.IsNullOrWhiteSpace(rythmStr))
 				return;
@@ -272,7 +271,7 @@ namespace FourByFour
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-			_rythmClipboard = this.Steps;
+			_rythmClipboard = this.Steps.Select(s => s.Probability > 0).ToList();
         }
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)

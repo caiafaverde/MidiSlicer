@@ -16,8 +16,8 @@ namespace FourByFour
 		static readonly object _BarsChangedKey = new object();
 		static readonly object _StepCountChangedKey = new object();
 		_StepList _steps;
-		_ProbList _probs;
-		_SubStepList _subSteps;
+		//_ProbList _probs;
+		//_SubStepList _subSteps;
 		
 		int _bars;
 		int _stepCount = 16;
@@ -35,8 +35,8 @@ namespace FourByFour
 			StepToggle ch;
 			var left = 0;
 
-			_probs = new _ProbList(bars*stepCount);
-            _subSteps = new _SubStepList(bars * stepCount);
+			//_probs = new _ProbList(bars*stepCount);
+            //_subSteps = new _SubStepList(bars * stepCount);
 
 
             for (var k = 0; k < bars; ++k)
@@ -59,7 +59,7 @@ namespace FourByFour
 						ch.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
 						left += ch.Size.Width;
 
-                        ch.MouseClick += Ch_MouseClick;
+                        //ch.MouseClick += Ch_MouseClick;
 						ch.Tag = k * 4 + i;
 					}
 					if ((i + k + 1)%4== 0)
@@ -73,11 +73,11 @@ namespace FourByFour
 			MinimumSize = new Size(left, 26);
 		}
 
-        private void Ch_MouseClick(object sender, MouseEventArgs e)
-        {
-            ((sender as Control).Parent as StepControl).Probs[Convert.ToInt32((sender as Control).Tag)] = (sender as StepToggle).Probability;
-            ((sender as Control).Parent as StepControl).SubSteps[Convert.ToInt32((sender as Control).Tag)] = (sender as StepToggle).SubSteps;
-        }
+        //private void Ch_MouseClick(object sender, MouseEventArgs e)
+        //{
+        //    ((sender as Control).Parent as StepControl).Probs[Convert.ToInt32((sender as Control).Tag)] = (sender as StepToggle).Probability;
+        //    ((sender as Control).Parent as StepControl).SubSteps[Convert.ToInt32((sender as Control).Tag)] = (sender as StepToggle).SubSteps;
+        //}
 
         public int Bars {
 			get {
@@ -129,29 +129,29 @@ namespace FourByFour
 			remove { Events.RemoveHandler(_StepCountChangedKey, value); }
 		}
 
-		public IList<int> Probs => _probs;
+		//public IList<int> Probs => _probs;
 
-		public IList<bool> Steps { get { return _steps; } }
+		public IList<DrumStep> Steps { get { return _steps; } }
 
-        public IList<SubSteps> SubSteps { get { return _subSteps; } }
+        //public IList<SubSteps> SubSteps { get { return _subSteps; } }
 
 
-        private sealed class _StepList : IList<bool>
+        private sealed class _StepList : IList<DrumStep>
 		{
 			readonly ControlCollection _controls;
 			internal _StepList(ControlCollection controls)
 			{
 				_controls = controls;
 			}
-			public bool this[int index] 
+			public DrumStep this[int index] 
 			{
 				get {
 					var ch = _controls[index] as StepToggle;
-					return ch.Checked;
+					return ch.DrumStep;
 				}
 				set {
 					var ch = _controls[index] as StepToggle;
-					ch.Checked = value;
+					ch.DrumStep = value;
 				}
 
 			}
@@ -159,7 +159,7 @@ namespace FourByFour
 			public int Count { get { return _controls.Count; } }
 			public bool IsReadOnly { get { return false; } }
 
-			public void Add(bool item)
+			public void Add(DrumStep item)
 			{
 				throw new NotSupportedException("The list is fixed size");
 			}
@@ -169,46 +169,46 @@ namespace FourByFour
 				throw new NotSupportedException("The list is fixed size");
 			}
 
-			public bool Contains(bool item)
+			public bool Contains(DrumStep item)
 			{
 				for(int ic=_controls.Count,i = 0;i<ic;++i)
 				{
 					var ch = _controls[i] as StepToggle;
-					if (item == ch.Checked)
+					if (item == ch.DrumStep)
 						return true;
 				}
 				return false;
 			}
 
-			public void CopyTo(bool[] array, int arrayIndex)
+			public void CopyTo(DrumStep[] array, int arrayIndex)
 			{
 				for(int ic=_controls.Count,i=0;i<ic; ++i)
-					array[arrayIndex + i] = (_controls[i] as StepToggle).Checked;
+					array[arrayIndex + i] = (_controls[i] as StepToggle).DrumStep;
 			}
 
-			public IEnumerator<bool> GetEnumerator()
+			public IEnumerator<DrumStep> GetEnumerator()
 			{
 				for (int ic = _controls.Count, i = 0; i < ic; ++i)
-					yield return (_controls[i] as StepToggle).Checked;
+					yield return (_controls[i] as StepToggle).DrumStep;
 			}
 
-			public int IndexOf(bool item)
+			public int IndexOf(DrumStep item)
 			{
 				for (int ic = _controls.Count, i = 0; i < ic; ++i)
 				{
 					var ch = _controls[i] as StepToggle;
-					if (item == ch.Checked)
+					if (item == ch.DrumStep)
 						return i;
 				}
 				return -1;
 			}
 
-			public void Insert(int index, bool item)
+			public void Insert(int index, DrumStep item)
 			{
 				throw new NotSupportedException("The list is fixed size");
 			}
 
-			public bool Remove(bool item)
+			public bool Remove(DrumStep item)
 			{
 				throw new NotSupportedException("The list is fixed size");
 			}
@@ -223,7 +223,7 @@ namespace FourByFour
 				return GetEnumerator();
 			}
 		}
-
+		/*
 		private sealed class _ProbList : IList<int>
 		{
             int[] _back;
@@ -413,5 +413,7 @@ namespace FourByFour
                 return GetEnumerator();
             }
         }
+
+		*/
     }
 }
