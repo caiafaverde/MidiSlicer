@@ -5,24 +5,41 @@ using System.Drawing.Drawing2D;
 
 namespace FourByFour
 {
+    public enum SubSteps : int
+    {
+        One = 1,
+        Two = 2,
+        Three = 3,
+        Four = 4,
+        Six = 6,
+        Flam
+    }
+
     public class StepToggle : ControlWithBevel
     {
         private Color _activeLedColor = Color.LightGreen;
         private Color _inactiveLedColor = Color.Green;
 
-        private float _prob = 0f;
-        public float Probability 
+        SubSteps _subSteps = SubSteps.One;
+        private int _prob = 0;
+        public int Probability 
         {
             get => _prob; 
             set 
             {
                 _prob = value;
-                if (_prob < 0f)
-                    _prob = 0f;
-                if (_prob > 1f)
-                    _prob = 1f;
-                this.Checked = _prob != 0f;
+                if (_prob < 0)
+                    _prob = 0;
+                if (_prob > 100)
+                    _prob = 1;
+                this.Checked = _prob != 0;
             } 
+        }
+
+        public SubSteps SubSteps
+        { 
+            get { return _subSteps; }
+            set { _subSteps = value; }
         }
 
         public StepToggle()
@@ -62,7 +79,7 @@ namespace FourByFour
 
             if (this.Pressed)
             {
-                if (this.Probability != 1f)
+                if (this.Probability != 100)
                     brush = new SolidBrush(Add(this._activeLedColor, -20));
                 else
                     brush = new SolidBrush(this._activeLedColor);
@@ -74,15 +91,38 @@ namespace FourByFour
 
             g.FillRectangle(brush, workRectangle);
 
-            if (this.Probability != 1f && this.Probability != 0f)
+            if (this.Probability != 0 && (int)_subSteps > 1)
+            {
+                //draw substeps
+                //g.DrawRectangle(new Pen(Brushes.Black), new Rectangle(new Point(workRectangle.X + 1, workRectangle.Y + 1), new Size(2, 2)));
+                DrawSubSteps(g, workRectangle);
+            }
+
+            if (this.Probability != 100 && this.Probability != 0)
             {
                 using (Brush brush3 = new SolidBrush(Color.Black))
                 {
                     var font = new Font(SystemFonts.SmallCaptionFont, FontStyle.Regular);
-                    g.DrawString($"{this.Probability:0.0}", this.Font, brush3, workRectangle.Top + 2, workRectangle.Left+ 2);
+                    g.DrawString($"{this.Probability/100f:0.0}", this.Font, brush3, workRectangle.Top + 2, workRectangle.Left+ 2);
                 }
             }
         }
+
+        void DrawSubSteps(Graphics g, Rectangle workRectangle)
+        {
+            if (_subSteps != SubSteps.Flam)
+            {
+                for (int i=0; i < (int)_subSteps; i++)
+                {
+                    g.DrawRectangle(new Pen(Brushes.Black), new Rectangle(new Point(workRectangle.X + 1 + i * 4, workRectangle.Y + 1 ), new Size(2, 2)));
+                }
+            }
+            else
+            {
+                g.DrawRectangle(new Pen(Brushes.Black), new Rectangle(new Point(workRectangle.X + 1, workRectangle.Y + 1), new Size(7, 2)));
+            }
+        }
+
 
         public Color ActiveLedColor
         {
@@ -151,21 +191,29 @@ namespace FourByFour
                 if (e.Button == MouseButtons.Left)
                 {
                     this.Checked = !this.Checked;
-                    this._prob = (this.Checked) ? 1f : 0f;
+                    this._prob = (this.Checked) ? 100 : 0;
+                    this.SubSteps = SubSteps.One;
                 }
                 else if (e.Button == MouseButtons.Middle)
                 {
                     this.Checked = true;
-                    if (this._prob == 1f)
-                        this._prob = 0f;
-                    this._prob += 0.1f;
-                    this.Invalidate();
+                    if (this._prob >= 100)
+                        this._prob = 0;
+                    this._prob += 10;
+                    
                 }
-                else if (e.Button == MouseButtons.Right)
+                else if (e.Button == MouseButtons.Right) //substeps programming?? 2-3-4-6
                 {
-                    this.Checked = false;
-                    this._prob = 0f;
+                    //this.Checked = false;
+                    //this._prob = 0;
+                    if (this.SubSteps == SubSteps.Flam)
+                        this.SubSteps = SubSteps.One;
+                    else
+                        this.SubSteps++;
+                    if ((int)SubSteps == 5)
+                        SubSteps++;
                 }
+                this.Invalidate();
 
                 try
                 {

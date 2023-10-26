@@ -145,7 +145,9 @@ namespace FourByFour
 
 		}
 
-		public IList<float> Probabilities => StepControl.Probs;
+		public IList<int> Probabilities => StepControl.Probs;
+
+		public IList<SubSteps> SubSteps => StepControl.SubSteps;
 
 		protected void OnDelete(EventArgs args)
 		{

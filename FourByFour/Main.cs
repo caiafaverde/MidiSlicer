@@ -204,12 +204,31 @@ namespace FourByFour
 
                     //TAKES TOO LONG...
                     var prob = beat.Probabilities[i];
-                    if (prob == 1f)
-                        noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1));
-                    else if (prob != 0f && (prob >= _rnd.NextDouble()))
+                    if (prob == 100 || (prob != 0 && (prob / 100f >= _rnd.NextDouble())))
                     {
-                        noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1));
+                        int position = i * (file.TimeBase / 4);
+                        if (beat.SubSteps[i] != SubSteps.Flam)
+                        {
+                            int nrOfNotes = (int)beat.SubSteps[i];
+                            int divider = nrOfNotes == 1 ? 1 : 2;
+                            for (int ii = 0; ii < nrOfNotes ; ii++)
+                            {
+                                noteMap.Add(new MidiNote(position + ii * (file.TimeBase / (4 * nrOfNotes)),
+                                    beat.Channel, note, 127, 
+                                    file.TimeBase / (4 * nrOfNotes * divider) - 1));
+                            }
+                        }
+                        else
+                        {
+                            //cater for 0!
+                        }
+
+                        //noteMap.Add(new MidiNote(position, beat.Channel, note, 127, file.TimeBase / 4 - 1));
                     }
+                    //else if (prob != 0 && (prob/100f >= _rnd.NextDouble()))
+                    //{
+                    //    noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1));
+                    //}
 
                 }
                 // convert the note map to a sequence
