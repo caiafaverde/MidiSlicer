@@ -132,11 +132,11 @@ namespace FourByFour
 
             };
             // our current cursor pos
-            int pos = 0;
+            //int pos = 0;
             // for tracking deltas
-            var ofs = 0;
+            //var ofs = 0;
             // the number of events in the seq
-            int len = seq.Events.Count;
+            //int len = seq.Events.Count;
             // add the first events
             //for (pos = 0; pos < MAX_EVENT_COUNT && ofs <= RATE_TICKS; ++pos)
             //{
@@ -196,6 +196,7 @@ namespace FourByFour
                 // it's easier to use a note map
                 // to build the drum sequence
                 var noteMap = new List<MidiNote>();
+                var sb = new StringBuilder();
                 for (int ic = beat.Steps.Count, i = 0; i < ic; ++i)
                 {
                     // if the step is pressed create 
@@ -203,20 +204,21 @@ namespace FourByFour
                     //if (beat.Steps[i])
                     //    noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1)); ;
 
-                    //TAKES TOO LONG...
+                    //
+                    
                     var prob = beat.Steps[i].Probability;
                     if (prob == 100 || (prob != 0 && (prob / 100f >= _rnd.NextDouble())))
                     {
-                        System.Diagnostics.Trace.Write($"{i} ");
+                        sb.Append(beat.Steps[i]);
                         int position = i * (file.TimeBase / 4);
                         if (beat.Steps[i].SubSteps != SubSteps.Flam)
                         {
                             int nrOfNotes = (int)beat.Steps[i].SubSteps;
                             int divider = nrOfNotes == 1 ? 1 : 2;
-                            for (int ii = 0; ii < nrOfNotes ; ii++)
+                            for (int ii = 0; ii < nrOfNotes; ii++)
                             {
                                 noteMap.Add(new MidiNote(position + ii * (file.TimeBase / (4 * nrOfNotes)),
-                                    beat.Channel, note, 127, 
+                                    beat.Channel, note, 127,
                                     file.TimeBase / (4 * nrOfNotes * divider) - 1));
                             }
                         }
@@ -227,6 +229,8 @@ namespace FourByFour
 
                         //noteMap.Add(new MidiNote(position, beat.Channel, note, 127, file.TimeBase / 4 - 1));
                     }
+                    else
+                        sb.Append('-');
                     //else if (prob != 0 && (prob/100f >= _rnd.NextDouble()))
                     //{
                     //    noteMap.Add(new MidiNote(i * (file.TimeBase / 4), beat.Channel, note, 127, file.TimeBase / 4 - 1));
@@ -236,8 +240,10 @@ namespace FourByFour
                 // convert the note map to a sequence
                 // and add it to our working tracks
                 if (noteMap.Count != 0)
+                {
                     trks.Add(MidiSequence.FromNoteMap(noteMap));
-                System.Diagnostics.Trace.WriteLine("");
+                    System.Diagnostics.Trace.WriteLine(sb);
+                }
             }
             // now we merge the sequences into one
             var t = MidiSequence.Merge(trks);

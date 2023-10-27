@@ -43,6 +43,14 @@ namespace FourByFour
             SubSteps = subSteps;
         }
 
+        public override string ToString()
+        {
+            if (Probability == 0) 
+                return "-";
+            else 
+                return $"{SubSteps}{_prob/100f:0.0}";
+        }
+
         //public void Check(bool check)
         //{
         //    _prob = check ? 100 : 0;
