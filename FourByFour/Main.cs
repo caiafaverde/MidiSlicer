@@ -68,16 +68,10 @@ namespace FourByFour
             PlayButton.Text = "Stop";
 
             _play = (OutputComboBox.SelectedItem as MidiOutputDevice).Stream;
-            var mf = _CreateMidiFile();
+            
             var stm = _play;
-
-           
-            // merge our file for playback
-            var seq = MidiSequence.Merge(mf.Tracks);
-           
-            // stores the next set of events
-            var eventList = new List<MidiEvent>(MAX_EVENT_COUNT);
-
+                
+            
             // open the stream
             stm.Open();
             // start it
@@ -93,36 +87,8 @@ namespace FourByFour
                 {
                     BeginInvoke(new Action(delegate ()
                     {
-                        var stream =s as MidiStream;
-                        // clear the list	
-                        //eventList.Clear();
-                        var evtList = new List<MidiEvent>();
-                        var midiFile = _CreateMidiFile();
-                        var seqq = MidiSequence.Merge(midiFile.Tracks);
-                        var ofss = 0;
-                        var poss = 0;
-                        var lenn = seq.Events.Count;
-                        // iterate through the next events
-                        var nextt = poss + MAX_EVENT_COUNT;
-                        //for (; poss < nextt && ofss <= RATE_TICKS; ++poss)
-
-                        //{
-                        //    // if it's past the end, loop it
-                        //    if (lenn <= poss)
-                        //    {
-                        //        poss = 0;
-                        //        break;
-                        //    }
-                        //    var ev = seqq.Events[poss];
-                        //    ofss += ev.Position;
-                        //    if (ev.Position < RATE_TICKS && RATE_TICKS < ofss)
-                        //        break;
-                        //    // otherwise add the next event
-                        //    evtList.Add(ev);
-                        //}
-                        // send the list of events
-                        if (MidiStreamState.Closed != stream.State)
-                            stream.SendDirect(/*evtList*/seq.Events);
+                        PrepareAndSendMidi(s as MidiStream);
+                        
                     }));
                 }
                 catch (Exception ex)
@@ -131,31 +97,43 @@ namespace FourByFour
                 }
 
             };
-            // our current cursor pos
-            //int pos = 0;
-            // for tracking deltas
-            //var ofs = 0;
-            // the number of events in the seq
-            //int len = seq.Events.Count;
-            // add the first events
-            //for (pos = 0; pos < MAX_EVENT_COUNT && ofs <= RATE_TICKS; ++pos)
+           
+            PrepareAndSendMidi(stm);
+
+        }
+
+        void PrepareAndSendMidi(MidiStream stream)
+        {
+            //
+            // clear the list	
+            //eventList.Clear();
+            var evtList = new List<MidiEvent>();
+            var midiFile = _CreateMidiFile();
+            var seq = MidiSequence.Merge(midiFile.Tracks);
+            //var ofss = 0;
+            //var poss = 0;
+            //var lenn = seq.Events.Count;
+            // iterate through the next events
+            //var nextt = poss + MAX_EVENT_COUNT;
+            //for (; poss < nextt && ofss <= RATE_TICKS; ++poss)
+
             //{
             //    // if it's past the end, loop it
-            //    if (len <= pos)
+            //    if (lenn <= poss)
             //    {
-            //        pos = 0;
+            //        poss = 0;
             //        break;
             //    }
-            //    var ev = seq.Events[pos];
-            //    ofs += ev.Position;
-            //    if (ev.Position < RATE_TICKS && RATE_TICKS < ofs)
+            //    var ev = seqq.Events[poss];
+            //    ofss += ev.Position;
+            //    if (ev.Position < RATE_TICKS && RATE_TICKS < ofss)
             //        break;
             //    // otherwise add the next event
-            //    eventList.Add(ev);
+            //    evtList.Add(ev);
             //}
             // send the list of events
-            stm.SendDirect(/*eventList*/seq.Events);
-
+            if (MidiStreamState.Closed != stream.State)
+                stream.SendDirect(/*evtList*/seq.Events);
         }
 
         MidiFile _CreateMidiFile()
